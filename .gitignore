@@ -1,2 +1,9 @@
 .ipynb_checkpoints
+__pycache__
+8_Method_Comparison_EXCLUDED
+99_Bias_In_Previous_Work
 *.pkl
+*.csv
+*.png
+*.pdf
+*.svg
