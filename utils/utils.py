@@ -7,12 +7,16 @@ from scipy.linalg import hadamard
 from scipy.sparse import csr_matrix
 import pickle
 
+# global variables of index data
 epi_list = None
 pathway_list = None
 gamma_list = None
 neighbor_list = None
 
 def load_pregenerated_data(N):
+    """
+    Load pregenerated index files
+    """
     global epi_list,pathway_list,gamma_list,neighbor_list
     if N == 5:
         with open('../index_file/epi_list_5s_all.pkl', 'rb') as f:
@@ -42,6 +46,7 @@ def load_pregenerated_data(N):
         with open('../index_file/neighbor_list_15s_all.pkl', 'rb') as f:
             neighbor_list = np.array(pickle.load(f))
 
+# A primitive way of calculating N_max
 #def get_N_max(landscape):
 #    N = landscape.shape[1] - 1
 #    N_max = 0
@@ -61,6 +66,8 @@ def load_pregenerated_data(N):
 #        if flag == True:
 #            N_max += 1
 #    return N_max    
+
+# Functions to calculate different ruggedness measures
 
 def get_N_max(landscape):
     return np.sum(np.max(landscape[neighbor_list][:,:,-1],axis=1) == landscape[neighbor_list[:,0]][:,-1])
@@ -167,11 +174,17 @@ def cal_adptwalk_probs(landscape):
     return scipy.sparse.linalg.spsolve(I-Q, R).mean()
 
 def normalize(array):
+    """
+    normalize values in a array
+    """
     MAX = np.max(array)
     MIN = np.min(array)
     return (array - MIN)/(MAX - MIN)
 
 def Add_Error(landscape,std):
+    """
+    Introduce measurement error to the FL
+    """
     landscape_error = copy.deepcopy(landscape)
     landscape_error[:,-1] += np.random.normal(0,std,landscape_error.shape[0])
     landscape_error[:,-1] = normalize(landscape_error[:,-1])
@@ -181,6 +194,9 @@ phi = None
 idx_1 = None
 
 def get_ruggedness_function(metric,N,gt_code):
+    """
+    Return the correct ruggedness calculating function according to the input "metric"
+    """
     global phi, idx_1
     if metric == 'N_max': 
         if N == 15:
